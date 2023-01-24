@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>User - {{ session['user_firstname'] }}</title>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <h3 class="navbar-brand">Coding Dojo Wall</h3>
+        <ul class="navbar-nav ml-auto list-group-horizontal">
+            <li class="nav-item mr-2">Welcome {{ session['user_firstname'] }}</li>
+            <li class="nav-item">
+                <a href="/logout">Log Out</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container mt-4 mx-auto">
+        <form action="/process/post" method="post">
+            <input type="hidden" name="user_id" value="{{ session['user_id'] }}">
+            <div class="form-group">
+                <label for="new post">What's on your mind? Create a new post:</p>
+                <textarea name="new_post" cols="70" rows="3" class="form-control"></textarea>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                        <p class="text-danger">{{ message }}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <button type="submit" class="form-group btn btn-secondary">Post</button>
+        </form>
+    </div>
+    <div class="container mt-4">
+        <h4>All Community Posts</h5>
+        {% for post in all_posts %}
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6>{{ post.creator.first_name }} {{ post.creator.last_name }}</h6>
+                    <p class="card-subtitle mb-2 text-muted">{{ post.created_at.strftime("%a %b %-d, %Y at %-I:%M %p") }}</p>
+                    <p class="card-text">{{ post.content }}</p>
+                    {% if session['user_id'] == post.creator.id %}
+                        <a class="card-link" href="/delete/post/{{ post.id }}">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
